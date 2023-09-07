@@ -4,12 +4,16 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.criandoapi.projeto01.model.Usuario;
 import com.criandoapi.projeto01.reporitory.UsuarioRepository;
+import com.criandoapi.projeto01.services.excecoes.BancoDadosExcecao;
 import com.criandoapi.projeto01.services.excecoes.RecursoNaoEncontradoExcecao;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class UsuarioService {
@@ -29,7 +33,6 @@ public class UsuarioService {
 	}
 	
 	
-	
 	public Usuario insert(Usuario obj) {
 		return usuarioRepository.save(obj);
 		}
@@ -40,7 +43,29 @@ public class UsuarioService {
 			usuarioRepository.deleteById(id);
 		}catch(EmptyResultDataAccessException e) {
 			throw new RecursoNaoEncontradoExcecao(id);
+		}catch(DataIntegrityViolationException e) {
+			throw new BancoDadosExcecao(e.getMessage());
 		}
+	}
+	
+	public Usuario update(Integer id, Usuario obj) {
+		try {
+			Usuario usuario = usuarioRepository.getReferenceById(id);
+			atualizarDados(usuario, obj);
+			return usuarioRepository.save(usuario);
+			
+		}catch(EntityNotFoundException e) {
+			throw new RecursoNaoEncontradoExcecao(id);
+		}
+		
+	}
+
+	private void atualizarDados(Usuario usuario, Usuario obj) {
+		
+		usuario.setNome(obj.getNome());
+		usuario.setEmail(obj.getEmail());
+		usuario.setTelefone(obj.getTelefone());
+		
 	}
 	
 }
