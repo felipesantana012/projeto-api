@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.criandoapi.projeto01.model.Usuario;
@@ -25,6 +26,21 @@ public class UsuarioService {
 	public Usuario findById(Integer id) {
 		Optional<Usuario> obj = usuarioRepository.findById(id);
 		return obj.orElseThrow(() -> new RecursoNaoEncontradoExcecao(id));	
+	}
+	
+	
+	
+	public Usuario insert(Usuario obj) {
+		return usuarioRepository.save(obj);
+		}
+	
+	
+	public void delete(Integer id) {
+		try {
+			usuarioRepository.deleteById(id);
+		}catch(EmptyResultDataAccessException e) {
+			throw new RecursoNaoEncontradoExcecao(id);
+		}
 	}
 	
 }
