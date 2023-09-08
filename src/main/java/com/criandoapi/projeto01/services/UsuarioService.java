@@ -21,12 +21,12 @@ public class UsuarioService {
 	@Autowired
 	private UsuarioRepository usuarioRepository;
 
-	//buscar todos usuarios
+	
 	public List<Usuario>findAll(){
 		return usuarioRepository.findAll();
 	}
 	
-	//buscar um usuario por id
+	
 	public Usuario findById(Integer id) {
 		Optional<Usuario> obj = usuarioRepository.findById(id);
 		return obj.orElseThrow(() -> new RecursoNaoEncontradoExcecao(id));	
