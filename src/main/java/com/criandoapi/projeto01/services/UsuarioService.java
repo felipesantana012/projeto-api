@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.criandoapi.projeto01.model.Usuario;
 import com.criandoapi.projeto01.reporitory.UsuarioRepository;
+import com.criandoapi.projeto01.services.criptografias.CriptografiaSenha;
 import com.criandoapi.projeto01.services.excecoes.BancoDadosExcecao;
 import com.criandoapi.projeto01.services.excecoes.RecursoNaoEncontradoExcecao;
 
@@ -20,7 +21,9 @@ public class UsuarioService {
 	
 	@Autowired
 	private UsuarioRepository usuarioRepository;
-
+	
+	@Autowired
+	private CriptografiaSenha criptografiaSenha;
 	
 	public List<Usuario>findAll(){
 		return usuarioRepository.findAll();
@@ -32,8 +35,10 @@ public class UsuarioService {
 		return obj.orElseThrow(() -> new RecursoNaoEncontradoExcecao(id));	
 	}
 	
+
 	
 	public Usuario insert(Usuario obj) {
+		obj.setSenha(  criptografiaSenha.criptografar(obj.getSenha())  );
 		return usuarioRepository.save(obj);
 		}
 	
@@ -66,6 +71,13 @@ public class UsuarioService {
 		usuario.setEmail(obj.getEmail());
 		usuario.setTelefone(obj.getTelefone());
 		
+	}
+
+
+	public Boolean validarSenha(Usuario obj) {
+		String senha = usuarioRepository.getById(obj.getId()).getSenha();
+		Boolean validar = criptografiaSenha.senhaCodificada().matches(obj.getSenha(), senha);
+		return validar;
 	}
 	
 }
